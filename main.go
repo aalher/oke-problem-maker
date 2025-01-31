@@ -74,7 +74,7 @@ func main() {
 	}
 
 	if !o.Random {
-		generate(&o)
+		generate(o)
 	} else {
 		rand.Seed(time.Now().UnixNano())
 		// Number of cases between 5-15
