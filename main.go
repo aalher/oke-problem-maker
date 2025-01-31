@@ -19,6 +19,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"math/rand"
 	"strings"
 	"time"
 
@@ -33,6 +34,7 @@ type options struct {
 	Rate     float32
 	Duration time.Duration
 	Problem  string
+	Random   bool
 }
 
 // AddFlags adds log counter command line options to pflag.
@@ -46,6 +48,8 @@ func (o *options) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&o.Problem, "problem", "",
 		fmt.Sprintf("The type of problem to be generated. Supported types: %q",
 			strings.Join(problems, ", ")))
+
+	fs.BoolVar(&o.Random, "random", false, "Make problems at random selected duration/problems at a rate of 1.0.")
 }
 
 func main() {
@@ -65,10 +69,28 @@ func main() {
 	o.AddFlags(pflag.CommandLine)
 	pflag.Parse()
 
-	if o.Problem == "" {
-		klog.Fatalf("Please specify the type of problem to make using the --problem argument.")
+	if o.Problem == "" && !o.Random {
+		klog.Fatalf("Please specify the type of problem to make using the --problem argument or choose random chaos.")
 	}
 
+	if !o.Random {
+		generate(&o)
+	} else {
+		rand.Seed(time.Now().UnixNano())
+		// Number of cases between 5-15
+
+		o.Rate = 1.0
+		o.Duration = time.Duration(rand.Intn(5)+1)
+		cases := rand.Intn(6) + 10
+		for i := 1; i <= cases; i++ {
+			o.Problem = getRandomProblem(makers.ProblemGenerators)
+
+			go generate(o)
+		}
+	}
+}
+
+func generate(o options) {
 	problemGenerator, ok := makers.ProblemGenerators[o.Problem]
 	if !ok {
 		klog.Fatalf("Expected to see a problem type of one of %q, but got %q.",
@@ -94,4 +116,16 @@ func main() {
 			problemGenerator()
 		}
 	}
+}
+
+func getRandomProblem(m map[string]func()) string {
+	keys := make([]string, 0, len(m))
+	for key := range m {
+		keys = append(keys, key)
+	}
+
+	rand.Seed(time.Now().UnixNano()) // Seed random generator
+	randomIndex := rand.Intn(len(keys))
+
+	return keys[randomIndex]
 }

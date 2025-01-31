@@ -15,7 +15,7 @@ func init() {
 	ProblemGenerators["Ext4FilesystemError"] = makeFilesystemError
 
 	// IO Errors
-	ProblemGenerators["IOErrors"] = makeIOErrors
+	ProblemGenerators["IOError"] = makeIOError
 
 	// Memory Errors
 	ProblemGenerators["MemoryReadError"] = makeMemoryReadError
@@ -70,7 +70,7 @@ func makeFilesystemError() {
 	}
 }
 
-func makeIOErrors() {
+func makeIOError() {
 	const msg = "Buffer I/O error on dev sda1, logical block 123456, async page read"
 
 	writeKernelMessageOrDie(msg)
