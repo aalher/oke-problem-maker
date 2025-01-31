@@ -1,0 +1,35 @@
+/*
+Copyright 2019 The Kubernetes Authors All rights reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
+package makers
+
+import (
+	"os"
+	"strings"
+
+	"k8s.io/klog/v2"
+)
+
+const kernelMessagePath = "/dev/ksmg"
+
+func writeKernelMessageOrDie(msg string) {
+	for _, line := range strings.Split(msg, "\n") {
+		err := os.WriteFile(kernelMessagePath, []byte(line), 0644)
+		if err != nil {
+			klog.Fatalf("Failed writing to %q: %v", kernelMessagePath, err)
+		}
+	}
+}
