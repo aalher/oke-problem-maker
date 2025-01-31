@@ -85,6 +85,7 @@ func main() {
 		for i := 1; i <= cases; i++ {
 			o.Problem = getRandomProblem(makers.ProblemGenerators)
 
+			fmt.Printf("Generating issue with root cause [%s]\n", o.Problem)
 			go generate(o)
 		}
 	}
