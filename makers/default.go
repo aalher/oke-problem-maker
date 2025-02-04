@@ -1,6 +1,7 @@
 package makers
 
 import (
+	"fmt"
 	"os"
 
 	"k8s.io/klog/v2"
@@ -56,7 +57,7 @@ Call Trace:
 
 func makeDockerContainerStartupFailure() {
     const msg = "Error response from daemon: OCI runtime create failed: container_linux.go:345"
-
+	fmt.Println("In makeDockerContainerStartupFailure")
     writeKernelMessageOrDie(msg)
 }
 

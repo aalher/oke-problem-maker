@@ -23,7 +23,7 @@ import (
 	"k8s.io/klog/v2"
 )
 
-const kernelMessagePath = "/dev/ksmg"
+const kernelMessagePath = "/dev/kmsg"
 
 func writeKernelMessageOrDie(msg string) {
 	for _, line := range strings.Split(msg, "\n") {

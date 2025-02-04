@@ -48,8 +48,6 @@ func (o *options) AddFlags(fs *pflag.FlagSet) {
 	fs.StringVar(&o.Problem, "problem", "",
 		fmt.Sprintf("The type of problem to be generated. Supported types: %q",
 			strings.Join(problems, ", ")))
-
-	fs.BoolVar(&o.Random, "random", false, "Make problems at random selected duration/problems at a rate of 1.0.")
 }
 
 func main() {
@@ -69,26 +67,11 @@ func main() {
 	o.AddFlags(pflag.CommandLine)
 	pflag.Parse()
 
-	if o.Problem == "" && !o.Random {
-		klog.Fatalf("Please specify the type of problem to make using the --problem argument or choose random chaos.")
+	if o.Problem == "" {
+		klog.Fatalf("Please specify the type of problem to make using the --problem argument.")
 	}
 
-	if !o.Random {
-		generate(o)
-	} else {
-		rand.Seed(time.Now().UnixNano())
-		// Number of cases between 5-15
-
-		o.Rate = 1.0
-		o.Duration = time.Duration(rand.Intn(5)+1)
-		cases := rand.Intn(6) + 10
-		for i := 1; i <= cases; i++ {
-			o.Problem = getRandomProblem(makers.ProblemGenerators)
-
-			fmt.Printf("Generating issue with root cause [%s]\n", o.Problem)
-			go generate(o)
-		}
-	}
+	generate(o)
 }
 
 func generate(o options) {
